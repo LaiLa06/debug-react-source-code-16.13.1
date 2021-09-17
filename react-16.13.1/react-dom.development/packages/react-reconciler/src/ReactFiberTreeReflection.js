@@ -33,7 +33,6 @@
     } // If we didn't hit the root, that means that we're in an disconnected tree
     // that has been unmounted.
 
-
     return null;
   }
   function getSuspenseInstanceFromFiber(fiber) {

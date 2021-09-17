@@ -9,8 +9,8 @@
   function getEventTarget(nativeEvent) {
     // Fallback to nativeEvent.srcElement for IE9
     // https://github.com/facebook/react/issues/12506
-    var target = nativeEvent.target || nativeEvent.srcElement || window; // Normalize SVG <use> element events #4963
 
+    var target = nativeEvent.target || nativeEvent.srcElement || window; // Normalize SVG <use> element events #4963
     if (target.correspondingUseElement) {
       target = target.correspondingUseElement;
     } // Safari may fire events on text nodes (Node.TEXT_NODE is 3).

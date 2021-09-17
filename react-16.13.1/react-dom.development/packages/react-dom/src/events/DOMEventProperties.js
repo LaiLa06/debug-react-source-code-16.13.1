@@ -82,6 +82,5 @@
     var priority = eventPriorities.get(topLevelType); // Default to a ContinuousEvent. Note: we might
     // want to warn if we can't detect the priority
     // for the event.
-
     return priority === undefined ? ContinuousEvent : priority;
   }

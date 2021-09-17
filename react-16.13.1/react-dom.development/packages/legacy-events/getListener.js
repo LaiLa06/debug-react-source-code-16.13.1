@@ -39,14 +39,13 @@
       // Work in progress (ex: onload events in incremental mode).
       return null;
     }
-
     var props = getFiberCurrentPropsFromNode(stateNode);
 
     if (!props) {
       // Work in progress.
       return null;
     }
-
+    
     listener = props[registrationName];
 
     if (shouldPreventMouseEvent(registrationName, inst.type, props)) {

@@ -164,7 +164,6 @@
 
   function completeWork(current, workInProgress, renderExpirationTime) {
     var newProps = workInProgress.pendingProps;
-
     switch (workInProgress.tag) {
       case IndeterminateComponent:
       case LazyComponent:
@@ -177,7 +176,6 @@
       case ContextConsumer:
       case MemoComponent:
         return null;
-
       case ClassComponent:
         {
           var Component = workInProgress.type;
@@ -260,10 +258,9 @@
               appendAllChildren(instance, workInProgress, false, false); // This needs to be set before we mount Flare event listeners
 
               workInProgress.stateNode = instance;
+              // console.dir(workInProgress)
               // (eg DOM renderer supports auto-focus for certain elements).
               // Make sure such renderers get scheduled for later work.
-
-
               if (finalizeInitialChildren(instance, type, newProps, rootContainerInstance)) {
                 markUpdate(workInProgress);
               }

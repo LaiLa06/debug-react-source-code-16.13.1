@@ -860,6 +860,7 @@
 
   function flushPendingDiscreteUpdates() {
     if (rootsWithPendingDiscreteUpdates !== null) {
+      // 有离散事件有未执行，等它们执行完成更新队列
       // For each root with pending discrete updates, schedule a callback to
       // immediately flush them.
       var roots = rootsWithPendingDiscreteUpdates;
@@ -1857,6 +1858,7 @@
     if (pendingPassiveEffectsRenderPriority !== NoPriority) {
       var priorityLevel = pendingPassiveEffectsRenderPriority > NormalPriority ? NormalPriority : pendingPassiveEffectsRenderPriority;
       pendingPassiveEffectsRenderPriority = NoPriority;
+      // console.log(priorityLevel, flushPassiveEffectsImpl)
       return runWithPriority$1(priorityLevel, flushPassiveEffectsImpl);
     }
   }

@@ -3,10 +3,10 @@
   var internalEventHandlersKey = '__reactEventHandlers$' + randomKey;
   var internalContainerInstanceKey = '__reactContainere$' + randomKey;
   function precacheFiberNode(hostInst, node) {
+    // 将事件触发节点firber挂在对应的dom的__reactInternalInstance属性上
     node[internalInstanceKey] = hostInst;
   }
   function markContainerAsRoot(hostRoot, node) {
-    console.log(333,hostRoot)
     node[internalContainerInstanceKey] = hostRoot;
   }
   function unmarkContainerAsRoot(node) {
@@ -142,9 +142,6 @@
     return node[internalEventHandlersKey] || null;
   }
   function updateFiberProps(node, props) {
-    console.log(1111)
-    console.dir(node)
+    // 将事件挂在对应的dom的__reactEventHandlers属性上
     node[internalEventHandlersKey] = props;
-    console.log(internalEventHandlersKey)
-    console.dir(node)
   }

@@ -5,6 +5,7 @@
    */
   function listenerAtPhase(inst, event, propagationPhase) {
     var registrationName = event.dispatchConfig.phasedRegistrationNames[propagationPhase];
+    console.log(registrationName)
     return getListener(inst, registrationName);
   }
   /**
@@ -33,8 +34,10 @@
     }
 
     var listener = listenerAtPhase(inst, event, phase);
+    console.log(listener)
 
     if (listener) {
+      // inst：事件对应的fiber
       event._dispatchListeners = accumulateInto(event._dispatchListeners, listener);
       event._dispatchInstances = accumulateInto(event._dispatchInstances, inst);
     }
@@ -50,6 +53,8 @@
 
   function accumulateTwoPhaseDispatchesSingle(event) {
     if (event && event.dispatchConfig.phasedRegistrationNames) {
+      // event._targetInst 当前事件源
+      // 沿着当前事件源fiber树逐级向上查找，先父捕获子捕获到子冒泡父冒泡
       traverseTwoPhase(event._targetInst, accumulateDirectionalDispatches, event);
     }
   }
@@ -85,6 +90,7 @@
   }
 
   function accumulateTwoPhaseDispatches(events) {
+    // console.log("event-----",events)
     forEachAccumulated(events, accumulateTwoPhaseDispatchesSingle);
   }
   function accumulateEnterLeaveDispatches(leave, enter, from, to) {

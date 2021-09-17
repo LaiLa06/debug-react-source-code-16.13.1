@@ -24,7 +24,6 @@
     // https://github.com/facebook/react/issues/1698
     // Then we restore state of any controlled component.
     var controlledComponentsHavePendingUpdates = needsStateRestore();
-
     if (controlledComponentsHavePendingUpdates) {
       // If a controlled event was fired, we may need to restore the state of
       // the DOM node back to the controlled value. This is necessary when React
@@ -51,7 +50,7 @@
     }
   }
   function batchedEventUpdates(fn, a, b) {
-    if (isBatchingEventUpdates) {
+    if (isBatchingEventUpdates) { // 是否开启批量更新
       // If we are currently inside another batch, we need to wait until it
       // fully completes before restoring state.
       return fn(a, b);

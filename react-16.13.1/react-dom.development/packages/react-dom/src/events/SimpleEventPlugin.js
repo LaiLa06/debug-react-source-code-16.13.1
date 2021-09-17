@@ -5,6 +5,12 @@
     // the DOMEventProperties module.
     eventTypes: simpleEventPluginEventTypes,
     extractEvents: function (topLevelType, targetInst, nativeEvent, nativeEventTarget, eventSystemFlags) {
+      // {
+      //   topLevelType： click
+      //   targetInst: 绑定事件的firbe对象
+      //   nativeEvent：原生事件
+      //   eventSystemFlags: 1 目前没看出啥用
+      //  }
       var dispatchConfig = topLevelEventsToDispatchConfig.get(topLevelType);
 
       if (!dispatchConfig) {
@@ -21,28 +27,22 @@
           if (getEventCharCode(nativeEvent) === 0) {
             return null;
           }
-
         /* falls through */
-
         case TOP_KEY_DOWN:
         case TOP_KEY_UP:
           EventConstructor = SyntheticKeyboardEvent;
           break;
-
         case TOP_BLUR:
         case TOP_FOCUS:
           EventConstructor = SyntheticFocusEvent;
           break;
-
         case TOP_CLICK:
           // Firefox creates a click event on right mouse clicks. This removes the
           // unwanted click events.
           if (nativeEvent.button === 2) {
             return null;
           }
-
         /* falls through */
-
         case TOP_AUX_CLICK:
         case TOP_DOUBLE_CLICK:
         case TOP_MOUSE_DOWN:
@@ -122,9 +122,10 @@
           EventConstructor = SyntheticEvent;
           break;
       }
-
       var event = EventConstructor.getPooled(dispatchConfig, targetInst, nativeEvent, nativeEventTarget);
       accumulateTwoPhaseDispatches(event);
+      // console.log("-----")
+      // console.dir(event)
       return event;
     }
   };

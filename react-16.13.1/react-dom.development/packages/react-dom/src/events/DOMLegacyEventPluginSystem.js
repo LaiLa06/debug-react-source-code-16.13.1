@@ -84,7 +84,7 @@
       eventSystemFlags: eventSystemFlags,
       nativeEvent: nativeEvent,
       targetInst: targetInst,
-      ancestors: []
+      ancestors: [] // 记录firber层级
     };
   }
   /**
@@ -142,7 +142,9 @@
   }
 
   function runExtractedPluginEventsInBatch(topLevelType, targetInst, nativeEvent, nativeEventTarget, eventSystemFlags) {
+    // 找到对应的事件插件，形成对应的合成event，形成事件执行队列
     var events = extractPluginEvents(topLevelType, targetInst, nativeEvent, nativeEventTarget, eventSystemFlags);
+    // 执行事件处理函数
     runEventsInBatch(events);
   }
 
@@ -160,9 +162,9 @@
         ancestors.push(ancestor);
         break;
       }
-
-      var root = findRootContainerNode(ancestor);
-
+      // ancestor数组是为了防止事件的回调中改变DOM的类型或者是直接删除了 DOM，导致事件无法被卸载。
+      var root = findRootContainerNode(ancestor); // 一级级找直到获得触发事件节点的root节点, 比如div#app
+      
       if (!root) {
         break;
       }
@@ -172,10 +174,16 @@
       if (tag === HostComponent || tag === HostText) {
         bookKeeping.ancestors.push(ancestor);
       }
-
       ancestor = getClosestInstanceFromNode(root);
     } while (ancestor);
-
+    // bookKeeping
+    // {
+    //   topLevelType: "click",
+    //   eventSystemFlags: 1,
+    //   nativeEvent: PointerEvent,
+    //   targetInst: FiberNode, 
+    //   ancestors: Array(1)}
+    //  }
     for (var i = 0; i < bookKeeping.ancestors.length; i++) {
       targetInst = bookKeeping.ancestors[i];
       var eventTarget = getEventTarget(bookKeeping.nativeEvent);
@@ -186,19 +194,29 @@
       if (i === 0) {
         eventSystemFlags |= IS_FIRST_ANCESTOR;
       }
-
+      // 处理批量执行事件回调
       runExtractedPluginEventsInBatch(topLevelType, targetInst, nativeEvent, eventTarget, eventSystemFlags);
     }
   }
 
   function dispatchEventForLegacyPluginEventSystem(topLevelType, eventSystemFlags, nativeEvent, targetInst) {
+    // bookKeeping举例：
+    // {
+    //   topLevelType: "click",
+    //   eventSystemFlags: 1,
+    //   nativeEvent: PointerEvent,
+    //   targetInst: FiberNode, 
+    //   ancestors: Array(1)}
+    //  }
     var bookKeeping = getTopLevelCallbackBookKeeping(topLevelType, nativeEvent, targetInst, eventSystemFlags);
 
     try {
       // Event queue being processed in the same cycle allows
       // `preventDefault`.
+      // 批量更新
       batchedEventUpdates(handleTopLevel, bookKeeping);
     } finally {
+      // 释放事件池
       releaseTopLevelCallbackBookKeeping(bookKeeping);
     }
   }
@@ -234,8 +252,9 @@
     }
   }
   function legacyListenToTopLevelEvent(topLevelType, mountAt, listenerMap) {
-    if (!listenerMap.has(topLevelType)) {
-      switch (topLevelType) {
+    // console.log(listenerMap,topLevelType)
+    if (!listenerMap.has(topLevelType)) { // 同一个onClick只会绑定一个listener
+      switch (topLevelType) { 
         case TOP_SCROLL:
           trapCapturedEvent(TOP_SCROLL, mountAt);
           break;

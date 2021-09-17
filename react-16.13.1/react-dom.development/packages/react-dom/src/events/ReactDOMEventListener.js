@@ -16,35 +16,40 @@
   }
 
   function trapEventForPluginEventSystem(container, topLevelType, capture) {
+    
     var listener;
 
+    // 参考资料：https://zhuanlan.zhihu.com/p/95443185
+    // getEventPriorityForPluginSystem(topLevelType) 获取事件优先级
+    // 根据DiscreteEvent,UserBlockingEvent,ContinuousEvent 事件类型选不同的事件派发器
     switch (getEventPriorityForPluginSystem(topLevelType)) {
-      case DiscreteEvent:
+      case DiscreteEvent: // 离散事件 例如blur、focus、 click、 submit、 touchStart
         listener = dispatchDiscreteEvent.bind(null, topLevelType, PLUGIN_EVENT_SYSTEM, container);
+        // listener = dispatchDiscreteEvent.bind(null, click, 1, #document);
         break;
 
-      case UserBlockingEvent:
+      case UserBlockingEvent: // 用户阻塞事件 例如touchMove、mouseMove、scroll、drag、dragOver等等
         listener = dispatchUserBlockingUpdate.bind(null, topLevelType, PLUGIN_EVENT_SYSTEM, container);
         break;
 
-      case ContinuousEvent:
+      case ContinuousEvent: // 连续事件 例如load、error、loadStart、abort、animationEnd. 优先级最高，持续执行，不可打断
       default:
         listener = dispatchEvent.bind(null, topLevelType, PLUGIN_EVENT_SYSTEM, container);
         break;
     }
 
-    var rawEventName = getRawEventName(topLevelType);
+    var rawEventName = getRawEventName(topLevelType); // 拿到对应的原生事件名
 
     if (capture) {
-      addEventCaptureListener(container, rawEventName, listener);
+      addEventCaptureListener(container, rawEventName, listener); // 捕获阶段
     } else {
-      addEventBubbleListener(container, rawEventName, listener);
+      addEventBubbleListener(container, rawEventName, listener); // 冒泡阶段
     }
   }
 
   function dispatchDiscreteEvent(topLevelType, eventSystemFlags, container, nativeEvent) {
-    flushDiscreteUpdatesIfNeeded(nativeEvent.timeStamp);
-    discreteUpdates(dispatchEvent, topLevelType, eventSystemFlags, container, nativeEvent);
+    flushDiscreteUpdatesIfNeeded(nativeEvent.timeStamp); // 处理之前累计的事件,入参是事件发生的时间戳
+    discreteUpdates(dispatchEvent, topLevelType, eventSystemFlags, container, nativeEvent); // 事件调度优先级
   }
 
   function dispatchUserBlockingUpdate(topLevelType, eventSystemFlags, container, nativeEvent) {
@@ -95,9 +100,10 @@
 
   function attemptToDispatchEvent(topLevelType, eventSystemFlags, container, nativeEvent) {
     // TODO: Warn if _enabled is false.
-    var nativeEventTarget = getEventTarget(nativeEvent);
-    var targetInst = getClosestInstanceFromNode(nativeEventTarget);
 
+    var nativeEventTarget = getEventTarget(nativeEvent); // 通过button click触发时候传的event 获取原生事件target
+    var targetInst = getClosestInstanceFromNode(nativeEventTarget); // 通过_internalInstanceKey找到事件触发dom对应的fiber，由于触发事件的 DOM 节点可能没有 Fiber 对象，所以通过 node.parentNode 的方式向上遍历节点，直到找到这个 Fiber 对象。
+    
     if (targetInst !== null) {
       var nearestMounted = getNearestMountedFiber(targetInst);
 
@@ -145,7 +151,6 @@
     {
       dispatchEventForLegacyPluginEventSystem(topLevelType, eventSystemFlags, nativeEvent, targetInst);
     } // We're not blocked on anything.
-
 
     return null;
   }

@@ -135,8 +135,10 @@
   }
 
   function ensureListeningTo(rootContainerElement, registrationName) {
+    // rootContainerElement  React应用的挂载点，或者是HostPortal的containe
     var isDocumentOrFragment = rootContainerElement.nodeType === DOCUMENT_NODE || rootContainerElement.nodeType === DOCUMENT_FRAGMENT_NODE;
     var doc = isDocumentOrFragment ? rootContainerElement : rootContainerElement.ownerDocument;
+    // 主要帮我们判断监听是绑在根节点 比如root 或者 document上，然后开始绑定了
     legacyListenToEvent(registrationName, doc);
   }
 
@@ -160,7 +162,7 @@
   }
 
   function setInitialDOMProperties(tag, domElement, rootContainerElement, nextProps, isCustomComponentTag) {
-    console.log("setInitialDOMProperties---",setInitialDOMProperties)
+    // console.log("nextProps---",nextProps)
     for (var propKey in nextProps) {
       if (!nextProps.hasOwnProperty(propKey)) {
         continue;
@@ -315,6 +317,7 @@
     return getOwnerDocumentFromRootContainer(rootContainerElement).createTextNode(text);
   }
   function setInitialProperties(domElement, tag, rawProps, rootContainerElement) {
+    // console.log(1111,rawProps)
     var isCustomComponentTag = isCustomComponent(tag, rawProps);
 
     {
@@ -323,7 +326,7 @@
 
 
     var props;
-
+    // 标签的原生事件注册和绑定
     switch (tag) {
       case 'iframe':
       case 'object':
@@ -331,22 +334,18 @@
         trapBubbledEvent(TOP_LOAD, domElement);
         props = rawProps;
         break;
-
       case 'video':
       case 'audio':
         // Create listener for each media event
         for (var i = 0; i < mediaEventTypes.length; i++) {
           trapBubbledEvent(mediaEventTypes[i], domElement);
         }
-
         props = rawProps;
         break;
-
       case 'source':
         trapBubbledEvent(TOP_ERROR, domElement);
         props = rawProps;
         break;
-
       case 'img':
       case 'image':
       case 'link':
@@ -371,7 +370,6 @@
         props = getHostProps(domElement, rawProps);
         trapBubbledEvent(TOP_INVALID, domElement); // For controlled components we always need to ensure we're listening
         // to onChange. Even if there is no listener.
-
         ensureListeningTo(rootContainerElement, 'onChange');
         break;
 
@@ -403,6 +401,7 @@
     }
 
     assertValidProps(tag, props);
+    // 处理props
     setInitialDOMProperties(tag, domElement, rootContainerElement, props, isCustomComponentTag);
 
     switch (tag) {
@@ -488,7 +487,6 @@
     var propKey;
     var styleName;
     var styleUpdates = null;
-    console.log(111111,lastProps)
     for (propKey in lastProps) {
       if (nextProps.hasOwnProperty(propKey) || !lastProps.hasOwnProperty(propKey) || lastProps[propKey] == null) {
         continue;
